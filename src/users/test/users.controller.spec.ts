@@ -1,4 +1,6 @@
 import { Test } from '@nestjs/testing';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../schemas/user.schema';
 import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
@@ -34,6 +36,76 @@ describe('Users controller', () => {
 
       test('then it should return the user', () => {
         expect(user).toEqual(userStub());
+      });
+    });
+  });
+
+  describe('createUser', () => {
+    describe('when createUser is called', () => {
+      let user: User;
+      let createUserDto: CreateUserDto;
+      beforeEach(async () => {
+        createUserDto = {
+          email: userStub().email,
+          age: userStub().age,
+        };
+        user = await usersController.createUser(createUserDto);
+      });
+
+      test('then it should call usersService', () => {
+        expect(usersService.createUser).toBeCalledWith(
+          createUserDto.email,
+          createUserDto.age,
+        );
+      });
+
+      test('then it should return the user', () => {
+        expect(user).toEqual(userStub());
+      });
+    });
+  });
+
+  describe('updateUser', () => {
+    describe('when updateUser is called', () => {
+      let user: User;
+      let updateUserDto: UpdateUserDto;
+      beforeEach(async () => {
+        updateUserDto = {
+          age: 0,
+          favoriteFoods: ['peperoni'],
+        };
+        user = await usersController.updateUser(
+          userStub().userId,
+          updateUserDto,
+        );
+      });
+
+      test('then it should call usersService', () => {
+        expect(usersService.updateUser).toBeCalledWith(
+          userStub().userId,
+          updateUserDto,
+        );
+      });
+
+      test('then it should return the user', () => {
+        expect(user).toEqual(userStub());
+      });
+    });
+  });
+
+  describe('getUsers', () => {
+    describe('when getUsers is called', () => {
+      let users: User[];
+      beforeEach(async () => {
+        users = await usersController.getUsers();
+      });
+
+      test('then it should call usersService', () => {
+        expect(usersService.getUsers).toBeCalledWith();
+      });
+
+      test('then it should return users', () => {
+        expect(users).toEqual([userStub()]);
       });
     });
   });
